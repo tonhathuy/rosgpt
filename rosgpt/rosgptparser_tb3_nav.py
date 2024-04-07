@@ -42,7 +42,7 @@ class LocationNavigationNode(Node):
 
     def voice_cmd_callback(self, msg):
         voice_command = msg.data.lower()
-
+        print(f'Received voice command: {voice_command}')
         for location in locations:
             if location["name"] in voice_command:
                 self.send_navigation_goal(location)
@@ -64,8 +64,10 @@ class LocationNavigationNode(Node):
         goal_msg.pose.pose.orientation.z = location["theta"]
 
         self.get_logger().info(f'Sending navigation goal: {location["name"]}')
-        self.action_client.wait_for_server()
+        # self.action_client.wait_for_server()
+        print('Action server is ready')
         goal_handle = self.action_client.send_goal_async(goal_msg)
+        print('Goal sent')
         goal_handle.add_done_callback(self.navigation_goal_done_callback)
 
     def navigation_goal_done_callback(self, future) -> None:

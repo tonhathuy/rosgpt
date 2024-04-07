@@ -24,6 +24,15 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 
 
+locations_json = """
+[
+    {"name": "kitchen", "x": 3, "y": 1.0, "theta": 0.0},
+    {"name": "living room", "x": 6.0, "y": 7.0, "theta": 0.0},
+    {"name": "bedroom", "x": -3.6, "y": -1, "theta": 0.0}
+]
+"""
+
+locations = json.loads(locations_json)
 
 class TurtlesimController(Node):
 
@@ -88,10 +97,42 @@ class TurtlesimController(Node):
         except Exception as e:
             print('[Exception] An unexpected error occurred:', str(e))   
 
-    def go_to_goal(self, location):
-        # TODO: Implement go_to_goal method
-        # wil be defined later
-        pass
+    def go_to_goal(self, msg):
+        # Implement go_to_goal method
+        print('Go to goal location: ', msg)
+
+        for location in locations:
+            if location["name"] in msg:
+                 # Implement the go_to_goal method
+                # The location is a dictionary with x and y keys
+                goal_pose = Pose()
+                goal_pose.x = location['x']
+                goal_pose.y = location['y']
+                goal_pose.theta = 0.0
+                print('Goal Pose: ', goal_pose)
+                # Calculate the distance to the goal
+                distance = self.get_distance(self.pose, goal_pose)
+                print('Distance to goal: ', distance)
+                # Calculate the angle to the goal, check 
+                angle = math.atan2(goal_pose.y - self.pose.y, goal_pose.x - self.pose.x)
+                # convert to degrees and round 
+                angle = math.degrees(angle)
+                angle = round(angle, 2)
+                # if the angle is negative, convert it to positive and is_clockwise
+                is_clockwise = True
+                if angle < 0:
+                    is_clockwise = False
+                    angle = abs(angle)
+                print('Angle to goal: ', angle, 'is_clockwise: ', is_clockwise)
+                # Rotate the robot to the goal 
+                self.thread_executor.submit(self.rotate, 10.0, angle, is_clockwise)
+                # Move the robot to the goal
+                self.thread_executor.submit(self.move, 0.3, distance, True)
+                break
+            else:
+                print("ERROR:No location found in the received JSON command")
+       
+
 
     async def move_coro(self, linear_speed, distance, is_forward):
         return self.move(linear_speed, distance, is_forward)
@@ -160,7 +201,7 @@ class TurtlesimController(Node):
         while rotated_related_angle_degree<desired_relative_angle_degree:
             #rclpy.spin_once(self)
             self.velocity_publisher.publish(twist_msg)
-            #print ('rotated_related_angle_degree', rotated_related_angle_degree, 'desired_relative_angle_degree', desired_relative_angle_degree)
+            # print ('rotated_degree', round(rotated_related_angle_degree,1), 'goal', desired_relative_angle_degree)
             rotated_related_angle_degree = math.degrees(abs(start_pose.theta - self.pose.theta))
             #rclpy.spin_once(self)
             

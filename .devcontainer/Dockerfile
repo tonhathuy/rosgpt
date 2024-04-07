@@ -16,3 +16,8 @@ USER $USERNAME
 
 # Add user to video group to allow access to webcam
 RUN sudo usermod --append --groups video $USERNAME
+RUN sudo apt update
+RUN sudo apt-get install python3-pip
+RUN sudo apt install ros-humble-navigation2 ros-humble-turtlesim*
+RUN sudo apt-get install libespeak1
+RUN pip3 install --upgrade setuptools==58.0.2 openai==0.28

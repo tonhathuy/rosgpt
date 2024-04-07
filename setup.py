@@ -33,6 +33,7 @@ setup(
             'rosgpt = rosgpt.rosgpt:main',
             'rosgptparser_turtlesim = rosgpt.rosgptparser_turtlesim:main',
             'rosgpt_client_node = rosgpt.rosgpt_client_node:main',
+            'rosgptparser_tb3_nav = rosgpt.rosgptparser_tb3_nav:main',
         ],
     },
 )
