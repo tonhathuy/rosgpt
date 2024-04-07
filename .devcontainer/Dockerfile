@@ -16,12 +16,3 @@ USER $USERNAME
 
 # Add user to video group to allow access to webcam
 RUN sudo usermod --append --groups video $USERNAME
-
-# Update all packages
-RUN sudo apt update && sudo apt upgrade -y
-
-# Install Git
-RUN sudo apt install -y git
-
-RUN sudo apt-get install libespeak1
-RUN sudo apt install ros-humble-turtlesim*
